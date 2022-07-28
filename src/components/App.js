@@ -5,15 +5,19 @@ import DogBar from './DogBar';
 function App() {
   const [dogs, setDogs] = useState([]);
   const [selectedDogId, setSelectedDogId] = useState();
+  const [isFiltered, setIsFiltered] = useState(false);
   
   const dogToShow = dogs.find( dog => dog.id === selectedDogId )
+
+  const filteredDogs = dogs.filter( dog => dog.isGoodDog );
+
+  const dogsToDisplay = isFiltered ? filteredDogs : dogs;
 
   useEffect( () => {
     fetch('http://localhost:3001/pups')
       .then( res => res.json() )
       .then( dogData => {
         setDogs(dogData)
-        // setSelectedDogId(dogData[0].id) 
       } )
   }, [])
 
@@ -39,13 +43,23 @@ function App() {
       } ) ) )
   }
 
+  // const toggleFilter = () => {
+  //   setIsFiltered( isFiltered => !isFiltered );
+
+  // }
+
   return (
     <div className="App">
       <div id="filter-div">
-        <button id="good-dog-filter">Filter good dogs: OFF</button>
+        <button
+          id="good-dog-filter"
+          onClick={ () => setIsFiltered( prev => !prev ) }
+        >
+          Filter good dogs: { isFiltered ? 'ON' : 'OFF' }
+        </button>
       </div>
       <div id="dog-bar">
-        <DogBar dogs={ dogs } selectDog={ selectDog } />
+        <DogBar dogs={ dogsToDisplay } selectDog={ selectDog } />
       </div>
       <div id="dog-summary-container">
         <h1>DOGGO:</h1>
